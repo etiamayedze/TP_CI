@@ -20,11 +20,11 @@ jobs:
         docker:
             - image: circleci/node:12
         steps:
-            - restore cache: 
+            - restore_cache: 
                 key: yarn-packages-{{ checksum "yarn.lock" }}
             - run: yarn global add node-gyp
             - run: yarn install
-            - save cache:
+            - save_cache:
                 key: yarn-packages-{{ checksum "yarn.lock" }}
                 path: 
                     - ./node_modules
