@@ -21,6 +21,13 @@ jobs:
             - image: circleci/node:12
         steps:
             - checkout
+            - restore cache: 
+                key: npm-v1-dependencies-{{ checksum "yarn.lock" }}
             - run: yarn global add node-gyp
             - run: yarn install
+            - save cache:
+                key: npm-v1-dependencies-{{ checksum "yarn.lock" }}
+                path: 
+                    - ./node_modules
+            
 
