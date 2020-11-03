@@ -8,7 +8,7 @@ workflows:
       - install_yarn
       - lint
       - test
-      -db
+      - db
       
       
 jobs:
