@@ -5,6 +5,7 @@ workflows:
   tests:
     jobs:
       - helloworld
+      - install_yarn
       
 jobs:
     helloworld:
@@ -13,4 +14,13 @@ jobs:
         steps:
             - checkout
             - run: echo "hello world"
+            
+            
+    install_yarn:
+        docker:
+            - image: circleci/node:12
+        steps:
+            - checkout
+            - run: yarn global add node-gyp
+            - run: yarn install
 
