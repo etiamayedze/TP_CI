@@ -22,11 +22,11 @@ jobs:
         steps:
             - checkout
             - restore cache: 
-                key: npm-v1-dependencies-{{ checksum "yarn.lock" }}
+                key: yarn-packages-{{ checksum "yarn.lock" }}
             - run: yarn global add node-gyp
             - run: yarn install
             - save cache:
-                key: npm-v1-dependencies-{{ checksum "yarn.lock" }}
+                key: yarn-packages-{{ checksum "yarn.lock" }}
                 path: 
                     - ./node_modules
             
