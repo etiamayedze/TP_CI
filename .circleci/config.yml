@@ -6,6 +6,9 @@ workflows:
     jobs:
       - helloworld
       - install_yarn
+      - lint
+      - test
+      
       
 jobs:
     helloworld:
@@ -16,10 +19,12 @@ jobs:
             - run: echo "hello world"
             
             
+            
     install_yarn:
         docker:
             - image: circleci/node:12
         steps:
+            - checkout
             - restore_cache: 
                 key: yarn-packages-{{ checksum "yarn.lock" }}
             - run: yarn global add node-gyp
@@ -28,5 +33,30 @@ jobs:
                 key: yarn-packages-{{ checksum "yarn.lock" }}
                 paths: 
                     - ./node_modules
+                    
+                    
+                    
+    lint:
+        docker:
+            - image: circleci/node:12
+        steps:
+            - checkout
+            - restore_cache: 
+                key: yarn-packages-{{ checksum "yarn.lock" }}
+            - run: yarn lint
+            - run: yarn format:check
+            
+            
+            
+    test:
+        docker:
+            - image: circleci/node:12
+        steps:
+            - checkout
+            - restore_cache: 
+                key: yarn-packages-{{ checksum "yarn.lock" }}
+            - run: yarn test:ci 
+        
+        
             
 
