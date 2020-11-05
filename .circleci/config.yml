@@ -20,15 +20,7 @@ workflows:
                 - lint
                 - test
                 - endtoend
-      - publish_image:
-            contest: 
-                - DOCKERPASSWORD
-            requires:
-                - build_docker
-            filters:
-                branches:
-                    only:
-                        - main
+      
       
       
 jobs:
