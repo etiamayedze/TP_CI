@@ -90,18 +90,21 @@ jobs:
             - checkout
             - restore_cache: 
                 key: yarn-packages-{{ checksum "yarn.lock" }}
+            - run: dockerize -wait tcp://localhost:5432 -timeout 1m
             - run: yarn test:e2e
             
             
             
     build_docker:
+        environment:
+            IMAGE_NAME: etiamayedze/docker-tp-ci
         docker:
             - image: circleci/buildpack-deps:stretch
         steps:
             - checkout
             - setup_remote_docker
-            - run: docker image build --tag etiamayedze/docker-tp-ci:app .
-            - run: docker save -o image.tar etiamayedze/docker-tp-ci
+            - run: docker image build --tag $IMAGE_NAME:app .
+            - run: docker save -o image.tar $IMAGE_NAME
             - persist_to_workspace:
                 root: .
                 paths:
