@@ -6,9 +6,29 @@ workflows:
     jobs:
       - helloworld
       - install_yarn
-      - lint
-      - test
-      - db
+      - lint:
+            requires:
+                - install_yarn
+      - test:
+            requires:
+                - install_yarn
+      - endtoend:
+            requires:
+                - install_yarn
+      - build_docker:
+            requires:
+                - lint
+                - test
+                - endtoend
+      - publish_image:
+            contest: 
+                - DOCKERPASSWORD
+            requires:
+                - build_docker
+            filters:
+                branches:
+                    only:
+                        - main
       
       
 jobs:
@@ -60,7 +80,7 @@ jobs:
             
             
             
-    db:
+    endtoend:
         docker:
             - image: circleci/node:12
               environment:
@@ -79,8 +99,61 @@ jobs:
             - restore_cache: 
                 key: yarn-packages-{{ checksum "yarn.lock" }}
             - run: yarn test:e2e
-        
-        
-        
             
+            
+            
+    build_docker:
+        docker:
+            - image: circleci/buildpack-deps:stretch
+        steps:
+            - checkout
+            - setup_remote_docker
+            - run: docker image build --tag etiamayedze/docker-tp-ci:app .
+            - run: docker save -o image.tar etiamayedze/docker-tp-ci
+            - persist_to_workspace:
+                root:
+                paths:
+                    - ./image.tar 
+                    
+                    
+    publish_image:
+        docker:
+            - image: circleci/buildpack-deps:stretch
+        steps:
+            - checkout
+            - attach_workspace:
+                at: /tmp/workspace
+            - setup_remote_docker
+            - run: docker load -i /tmp/workspace/image.tar
+            - run:
+                command:
+                    echo "$DOCKERPASSWORD" | docker login --username etiamayedze --password-stdin
+                    docker tag etiamayedze/docker-tp-ci:app etiamayedze/docker-tp-ci:$CIRCLE_BUILD_NUM
+                    docker tag etiamayedze/docker-tp-ci:app etiamayedze/docker-tp-ci:latest
+                    docker push etiamayedze/docker-tp-ci:latest
+                    docker push etiamayedze/docker-tp-ci:$CIRCLE_BUILD_NUM
+                    
+        
+        
+        
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
