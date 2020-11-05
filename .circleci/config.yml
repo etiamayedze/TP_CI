@@ -25,7 +25,7 @@ workflows:
                     only:
                         - main
       - publish_image:
-            contest: 
+            context: 
                 - DOCKERPASSWORD
             requires:
                 - build_docker 
