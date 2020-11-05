@@ -103,7 +103,7 @@ jobs:
             - run: docker image build --tag etiamayedze/docker-tp-ci:app .
             - run: docker save -o image.tar etiamayedze/docker-tp-ci
             - persist_to_workspace:
-                root:
+                root: .
                 paths:
                     - ./image.tar 
                     
