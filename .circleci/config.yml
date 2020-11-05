@@ -24,7 +24,11 @@ workflows:
                 branches:
                     only:
                         - main
-
+      - publish_image:
+            contest: 
+                - DOCKERPASSWORD
+            requires:
+                - build_docker 
       
       
       
@@ -117,7 +121,22 @@ jobs:
                     
     
                     
-        
+    publish_image:
+        docker:
+            - image: circleci/buildpack-deps:stretch
+        steps:
+            - checkout
+            - attach_workspace:
+                at: /tmp/workspace
+            - setup_remote_docker
+            - run: docker load -i /tmp/workspace/image.tar
+            - run:
+                command:
+                    echo "$DOCKERPASSWORD" | docker login --username etiamayedze --password-stdin
+                    docker tag etiamayedze/docker-tp-ci:app etiamayedze/docker-tp-ci:$CIRCLE_BUILD_NUM
+                    docker tag etiamayedze/docker-tp-ci:app etiamayedze/docker-tp-ci:latest
+                    docker push etiamayedze/docker-tp-ci:latest
+                    docker push etiamayedze/docker-tp-ci:$CIRCLE_BUILD_NUM    
         
         
     
